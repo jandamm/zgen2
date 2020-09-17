@@ -1,5 +1,5 @@
 #!/bin/zsh
-# vim: set ft=zsh fenc=utf-8 noai ts=4 et sts=4 sw=0 tw=80 nowrap :
+# vim: set ft=zsh fenc=utf-8 noai ts=4 et sts=4 sw=4 tw=80 nowrap :
 local ZGEN_SOURCE="$0:A:h"
 
 -zgputs() { printf %s\\n "$@" ;}
@@ -298,7 +298,7 @@ zgen-apply() {
         -zgpute "Initializing completions ..."
 
         autoload -Uz compinit && \
-            compinit $ZGEN_COMPINIT_FLAGS
+            eval "compinit $ZGEN_COMPINIT_FLAGS"
     fi
 }
 

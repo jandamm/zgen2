@@ -1,5 +1,5 @@
 #!/bin/zsh
-# vim: set ft=zsh fenc=utf-8 noai ts=4 et sts=4 sw=0 tw=80 nowrap :
+# vim: set ft=zsh fenc=utf-8 noai ts=4 et sts=4 sw=4 tw=80 nowrap :
 local ZGEN_SOURCE="$0:A:h"
 
 if [[ -z "${ZGEN_DIR}" ]]; then
