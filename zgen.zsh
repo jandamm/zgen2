@@ -289,6 +289,23 @@ zgen-save() {
     -zginit "# }}}"
 
     zgen-apply
+
+    -zgpute "Compiling files ..."
+    zgen-compile $ZGEN_DIR
+    if [[ $ZGEN_DIR != $ZGEN_SOURCE ]]; then
+        zgen-compile $ZGEN_SOURCE
+    fi
+    if [[ -n $ZGEN_CUSTOM_COMPDUMP ]]; then
+        -zgen-compile $ZGEN_CUSTOM_COMPDUMP
+    else
+        set -o nullglob
+        for compdump in $HOME/.zcompdump*; do
+            if [ $compdump = *.zwc ]; then
+                continue
+            fi
+            -zgen-compile $compdump
+        done
+    fi
 }
 
 zgen-apply() {
@@ -312,6 +329,42 @@ zgen-apply() {
         -zgputs "$(-zgen-get-clone-dir "$ZGEN_PREZTO_REPO" "$ZGEN_PREZTO_BRANCH")"
     else
         -zgputs "$(-zgen-get-clone-dir "$ZGEN_OH_MY_ZSH_REPO" "$ZGEN_OH_MY_ZSH_BRANCH")"
+    fi
+}
+
+-zgen-compile() {
+    local file=$1
+    [ ! $file.zwc -nt $file ] && zcompile $file
+}
+
+zgen-compile() {
+    local inp=$1
+    if [ -z $inp ]; then
+        -zgpute '`compile` requires one parameter:'
+        -zgpute '`zgen compile <location>`'
+    elif [ -f $inp ]; then
+        -zgen-compile $inp
+    else
+        set -o nullglob
+        for file in $inp/**/*
+        do
+            # only files and ignore compiled files
+            if [ ! -f $file ] || [[ $file = *.zwc ]]; then
+                continue
+
+            # Check for shebang if not:
+            # - *.zsh
+            # - *.sh
+            # - zcompdump*
+            elif [[ $file != *.zsh ]] && [[ $file != *.sh ]] && [[ $file != *zcompdump* ]]; then
+                read -r firstline < $file
+                if [[ ! $firstline =~ '^#!.*zsh' ]] 2>/dev/null; then
+                    continue
+                fi
+            fi
+
+            -zgen-compile $file
+        done
     fi
 }
 
