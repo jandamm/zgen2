@@ -447,6 +447,58 @@ zgen-loadall() {
     done
 }
 
+-zgen-bin() {
+    local file="${1}"
+    local name="${2}"
+    if [[ -z $name ]]; then
+        name=${file##*/}
+    fi
+    destination=$ZGEN_DIR/bin/$name
+    if [[ ! -e $destination ]]; then
+        ln -s $file $destination
+    fi
+}
+
+zgen-bin() {
+    if [[ "$#" == 0 ]]; then
+        -zgpute '`load` requires at least one parameter:'
+        -zgpute '`zgen load <repo> [location] [branch] [name]`'
+        return
+    fi
+    local repo="${1}"
+    local location="${2%/}"
+    local branch="${3:-master}"
+    local name="${4}"
+    local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
+
+    # clone repo if not present
+    if [[ ! -d "${dir}" ]]; then
+        zgen-clone "${repo}" "${branch}"
+    fi
+
+    if [[ ! -d "${ZGEN_DIR}/bin" ]]; then
+        mkdir -p "${ZGEN_DIR}/bin"
+    fi
+
+    set -o nullglob
+    if [[ -n $location ]]; then
+        location="${dir/location}"
+        if [[ -f "${location}" ]]; then
+            -zgen-bin "${location}" $name
+            return
+        fi
+    elif [[ -d "${dir}/bin" ]]; then
+        location="${dir}/bin"
+    else
+        location="${dir}"
+    fi
+    for file in ${location}/*; do
+        if [[ -x $file ]]; then
+            -zgen-bin "$file"
+        fi
+    done
+}
+
 zgen-list() {
     if [[ -f "${ZGEN_INIT}" ]]; then
         cat "${ZGEN_INIT}"
@@ -523,7 +575,7 @@ zgen() {
     if [[ -z "${cmd}" ]]; then
         -zgputs 'usage: `zgen [command | instruction] [options]`'
         -zgputs "    commands: list, saved, reset, clone, update, selfupdate"
-        -zgputs "    instructions: load, oh-my-zsh, pmodule, prezto, save, apply"
+        -zgputs "    instructions: load, bin, oh-my-zsh, pmodule, prezto, save, apply"
         return 1
     fi
 
