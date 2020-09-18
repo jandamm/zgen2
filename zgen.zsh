@@ -592,7 +592,7 @@ zgen() {
     local cmd="${1}"
     if [[ -z "${cmd}" ]]; then
         -zgputs 'usage: `zgen [command | instruction] [options]`'
-        -zgputs "    commands: list, saved, reset, clone, update, selfupdate"
+        -zgputs "    commands: list, saved, reset, clone, update, selfupdate, compile"
         -zgputs "    instructions: load, bin, oh-my-zsh, pmodule, prezto, save, apply"
         return 1
     fi
