@@ -30,6 +30,10 @@ if [[ -z "${ZGEN_LOADED}" ]]; then
     ZGEN_LOADED=()
 fi
 
+if [[ -z "${ZGEN_ADD_PATH}" ]]; then
+    ZGEN_ADD_PATH=1
+fi
+
 if [[ -z "${ZGEN_PREZTO_OPTIONS}" ]]; then
     ZGEN_PREZTO_OPTIONS=()
 fi
@@ -255,7 +259,7 @@ zgen-save() {
         -zginit '   compinit -C '"${ZGEN_COMPINIT_DIR_FLAG}"
     fi
 
-    if [[ -d "$ZGEN_DIR/bin" ]]; then
+    if [[ ${ZGEN_ADD_PATH} == 1 ]] && [[ -d "$ZGEN_DIR/bin" ]]; then
         -zginit ""
         -zginit "# ### Bins"
         -zginit 'path=('"${ZGEN_DIR}"/bin' ${path})'
@@ -328,7 +332,7 @@ zgen-apply() {
             eval "compinit $ZGEN_COMPINIT_FLAGS"
     fi
 
-    if [[ -d "$ZGEN_DIR/bin" ]]; then
+    if [[ ${ZGEN_ADD_PATH} == 1 ]] && [[ -d "$ZGEN_DIR/bin" ]]; then
         path=("$ZGEN_DIR/bin" $path)
     fi
 }
