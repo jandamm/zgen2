@@ -27,14 +27,16 @@ zgen-init() {
 # Run initialization only once
 if [[ -z $ZGEN_LAZY_LOCK ]]; then
     zgen() {
-        if [[ $1 = 'saved' ]]; then
-            zgen-saved
-        else
-            ZGEN_LAZY_LOCK=yes
-            source "${ZGEN_SOURCE}/zgen.zsh"
-            unset ZGEN_LAZY_LOCK
-            zgen $@
-        fi
+        case $1 in
+            saved) zgen-saved;;
+            init) zgen-init;;
+            *)
+                ZGEN_LAZY_LOCK=yes
+                source "${ZGEN_SOURCE}/zgen.zsh"
+                unset ZGEN_LAZY_LOCK
+                zgen $@
+                ;;
+        esac
     }
     fpath=($ZGEN_SOURCE $fpath)
     zgen-init
