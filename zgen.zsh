@@ -204,6 +204,10 @@ zgen-reset() {
         -zgpute 'Deleting `'"${ZGEN_CUSTOM_COMPDUMP}"'` ...'
         rm -r "${ZGEN_CUSTOM_COMPDUMP}"
     fi
+    if [[ -d "$ZGEN_DIR/bin" ]]; then
+        -zgpute 'Deleting `'"${ZGEN_DIR}/bin"'` ...'
+        rm -dr $ZGEN_DIR/bin
+    fi
 }
 
 zgen-update() {
@@ -249,6 +253,12 @@ zgen-save() {
         -zginit ""
         -zginit 'autoload -Uz compinit && \'
         -zginit '   compinit -C '"${ZGEN_COMPINIT_DIR_FLAG}"
+    fi
+
+    if [[ -d "$ZGEN_DIR/bin" ]]; then
+        -zginit ""
+        -zginit "# ### Bins"
+        -zginit 'path=('"${ZGEN_DIR}"/bin' ${path})'
     fi
 
     # Check for file changes
@@ -316,6 +326,10 @@ zgen-apply() {
 
         autoload -Uz compinit && \
             eval "compinit $ZGEN_COMPINIT_FLAGS"
+    fi
+
+    if [[ -d "$ZGEN_DIR/bin" ]]; then
+        path=("$ZGEN_DIR/bin" $path)
     fi
 }
 
